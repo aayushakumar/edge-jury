@@ -55,7 +55,10 @@ export function useCouncilChat(settings: CouncilSettings) {
     const [stage3Result, setStage3Result] = useState<Stage3Result | null>(null);
     const [stage4Result, setStage4Result] = useState<Stage4Result | null>(null);
 
-    const sendMessage = useCallback(async (content: string) => {
+    const sendMessage = useCallback(async (content: string, _isTrialMode = false) => {
+        // Note: _isTrialMode is passed from App.tsx for trial tracking
+        // The backend currently doesn't persist for anonymous users anyway
+
         // Add user message
         const userMessage: Message = {
             id: crypto.randomUUID(),

@@ -1,0 +1,51 @@
+.trial-modal {
+    max-width: 420px;
+    width: 90%;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    text-align: center;
+}
+
+.trial-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.trial-modal h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.trial-count {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.trial-count strong {
+    color: var(--accent-primary);
+}
+
+.trial-message {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.trial-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.trial-actions .btn {
+    min-width: 140px;
+}
+
+.trial-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}

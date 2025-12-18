@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Header } from './components/Layout/Header';
 import { ChatPanel } from './components/Chat/ChatPanel';
 import { CouncilPanel } from './components/Council/CouncilPanel';
@@ -6,6 +6,7 @@ import { VerificationPanel } from './components/Verification/VerificationPanel';
 import { SettingsModal, CouncilSettings } from './components/Settings/SettingsModal';
 import { HistorySidebar } from './components/History/HistorySidebar';
 import { HomePage } from './components/HomePage/HomePage';
+import { TrialLimitModal } from './components/Trial/TrialLimitModal';
 import { useCouncilChat } from './hooks/useCouncilChat';
 import './styles/app.css';
 
@@ -16,18 +17,31 @@ const DEFAULT_SETTINGS: CouncilSettings = {
     anonymize_reviews: true,
 };
 
+const TRIAL_LIMIT = 3;
+const TRIAL_STORAGE_KEY = 'edgejury_trial_chats';
+
 function App() {
     const [currentView, setCurrentView] = useState<'home' | 'chat'>('home');
     const [activeTab, setActiveTab] = useState<'council' | 'verification'>('council');
     const [showSettings, setShowSettings] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
+    const [showTrialModal, setShowTrialModal] = useState(false);
+    const [trialChatsUsed, setTrialChatsUsed] = useState(0);
     const [councilSettings, setCouncilSettings] = useState<CouncilSettings>(DEFAULT_SETTINGS);
+
+    // Load trial count from localStorage on mount
+    useEffect(() => {
+        const stored = localStorage.getItem(TRIAL_STORAGE_KEY);
+        if (stored) {
+            setTrialChatsUsed(parseInt(stored, 10) || 0);
+        }
+    }, []);
 
     const {
         messages,
         currentRun,
         isLoading,
-        sendMessage,
+        sendMessage: originalSendMessage,
         stage1Results,
         stage2Results,
         stage3Result,
@@ -35,6 +49,28 @@ function App() {
         loadConversation,
         clearConversation,
     } = useCouncilChat(councilSettings);
+
+    // Wrap sendMessage to track trial usage
+    const sendMessage = useCallback((content: string) => {
+        // Check if trial limit reached
+        if (trialChatsUsed >= TRIAL_LIMIT) {
+            setShowTrialModal(true);
+            return;
+        }
+
+        // Increment trial counter
+        const newCount = trialChatsUsed + 1;
+        setTrialChatsUsed(newCount);
+        localStorage.setItem(TRIAL_STORAGE_KEY, newCount.toString());
+
+        // Send the message (with isTrialMode=true to skip DB persistence)
+        originalSendMessage(content, true);
+
+        // Show modal after limit is reached
+        if (newCount >= TRIAL_LIMIT) {
+            setTimeout(() => setShowTrialModal(true), 500);
+        }
+    }, [trialChatsUsed, originalSendMessage]);
 
     const handleNavClick = useCallback((view: 'chat' | 'history' | 'settings' | 'home') => {
         if (view === 'history') {
@@ -136,6 +172,14 @@ function App() {
                 onSelectConversation={handleSelectConversation}
                 currentConversationId={currentRun?.conversation_id}
                 onNewConversation={handleNewConversation}
+            />
+
+            {/* Trial Limit Modal */}
+            <TrialLimitModal
+                isOpen={showTrialModal}
+                onClose={() => setShowTrialModal(false)}
+                chatsUsed={trialChatsUsed}
+                maxChats={TRIAL_LIMIT}
             />
         </div>
     );
