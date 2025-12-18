@@ -134,16 +134,39 @@ ${this.formatStage2(stage2Results)}
     }
 
     /**
-     * Parse JSON from LLM response
+     * Parse JSON from LLM response - handles truncated JSON gracefully
      */
     private parseJsonResponse(text: string): Partial<Stage3Result> {
         try {
+            // First, try to extract just the final_answer even if JSON is incomplete
+            const finalAnswerMatch = text.match(/"final_answer"\s*:\s*"([^"]+(?:\\.[^"]*)*)"/);
+            const extractedAnswer = finalAnswerMatch
+                ? finalAnswerMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"')
+                : null;
+
+            // Try to parse complete JSON
             const jsonMatch = text.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
-                return JSON.parse(jsonMatch[0]);
+                try {
+                    const parsed = JSON.parse(jsonMatch[0]);
+                    return parsed;
+                } catch {
+                    // JSON incomplete/invalid - use extracted fields
+                    if (extractedAnswer) {
+                        return { final_answer: extractedAnswer };
+                    }
+                }
             }
+
+            // If we got a final_answer from regex, use it
+            if (extractedAnswer) {
+                return { final_answer: extractedAnswer };
+            }
+
             // If no JSON found, treat the whole response as the final answer
-            return { final_answer: text };
+            // But clean it up - remove any JSON-like fragments
+            const cleanText = text.replace(/\{[\s\S]*$/, '').trim() || text;
+            return { final_answer: cleanText };
         } catch {
             console.error('Failed to parse chairman JSON:', text);
             return { final_answer: text };
