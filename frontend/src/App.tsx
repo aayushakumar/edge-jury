@@ -107,7 +107,7 @@ function App() {
     // Show chat interface
     return (
         <div className="app">
-            <Header onNavClick={handleNavClick} />
+            <Header onNavClick={handleNavClick} isTrialMode={trialChatsUsed < TRIAL_LIMIT} />
 
             <main className="main-content">
                 <div className="content-grid">
