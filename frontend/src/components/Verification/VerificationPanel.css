@@ -1,0 +1,162 @@
+.verification-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.verification-empty,
+.verification-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-12);
+    color: var(--color-text-secondary);
+}
+
+.verification-empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+}
+
+.verification-empty h3,
+.verification-loading p {
+    font-size: 1.125rem;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.verification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.verification-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.mode-badge {
+    font-size: 0.6875rem;
+}
+
+/* Stats */
+.verification-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-4);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.stat-icon {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-1);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+
+.stat-label {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    letter-spacing: 0.05em;
+}
+
+.stat-verified .stat-value {
+    color: var(--color-green);
+}
+
+.stat-uncertain .stat-value {
+    color: var(--color-yellow);
+}
+
+.stat-contradicted .stat-value {
+    color: var(--color-red);
+}
+
+/* Claims */
+.claims-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.claim-card {
+    padding: var(--space-4);
+    transition: all var(--transition-fast);
+}
+
+.claim-card.verified,
+.claim-card.consistent {
+    border-left: 3px solid var(--color-green);
+}
+
+.claim-card.uncertain {
+    border-left: 3px solid var(--color-yellow);
+}
+
+.claim-card.contradicted {
+    border-left: 3px solid var(--color-red);
+}
+
+.claim-header {
+    margin-bottom: var(--space-2);
+}
+
+.claim-text {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+}
+
+.claim-note {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin-top: var(--space-2);
+    font-style: italic;
+}
+
+.claim-evidence {
+    margin-top: var(--space-3);
+    padding: var(--space-3);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+}
+
+.claim-evidence strong {
+    color: var(--color-cyan);
+}
+
+.evidence-source {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.no-claims {
+    padding: var(--space-6);
+    text-align: center;
+    color: var(--color-text-muted);
+    font-style: italic;
+}

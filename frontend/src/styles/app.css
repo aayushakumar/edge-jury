@@ -1,0 +1,66 @@
+/* App Layout Styles */
+
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1;
+    padding: var(--space-6);
+    padding-top: calc(60px + var(--space-6));
+    /* Account for fixed header */
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    height: calc(100vh - 60px - var(--space-12));
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+.chat-section,
+.panel-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.panel-section {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.panel-tabs {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .chat-section {
+        min-height: 400px;
+    }
+
+    .panel-section {
+        min-height: 500px;
+    }
+}

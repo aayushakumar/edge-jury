@@ -1,0 +1,232 @@
+.council-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.council-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-12);
+    color: var(--color-text-secondary);
+}
+
+.council-empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+}
+
+.council-empty h3 {
+    font-size: 1.125rem;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+}
+
+/* Stage Sections */
+.stage-section {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.stage-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.stage-header h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.stage-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--color-cyan), var(--color-purple));
+    color: var(--color-bg-primary);
+    border-radius: var(--radius-full);
+}
+
+/* Model Tabs */
+.model-tabs {
+    margin-bottom: var(--space-3);
+}
+
+.model-response {
+    padding: var(--space-4);
+}
+
+.model-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.model-latency {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+}
+
+.model-response-text {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Reviews Grid */
+.reviews-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.review-card {
+    padding: var(--space-4);
+}
+
+.review-card h4 {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+    color: var(--color-text-secondary);
+}
+
+.issues-list,
+.best-bits-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.issue-item {
+    padding: var(--space-2);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+}
+
+.issue-candidate {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-yellow);
+}
+
+.issue-type {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-left: var(--space-2);
+}
+
+.issue-detail {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin-top: var(--space-1);
+}
+
+.no-issues {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.best-bit {
+    padding: var(--space-2);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--color-green);
+}
+
+.bit-candidate {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-green);
+}
+
+.bit-extract {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-top: var(--space-1);
+}
+
+/* Chairman Details */
+.chairman-details {
+    padding: var(--space-4);
+}
+
+.chairman-details h4 {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    color: var(--color-text-secondary);
+}
+
+.rationale-section,
+.disagreements-section {
+    margin-bottom: var(--space-4);
+}
+
+.rationale-list {
+    list-style: disc;
+    padding-left: var(--space-5);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+}
+
+.disagreement-item {
+    padding: var(--space-3);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-2);
+}
+
+.disagreement-item strong {
+    font-size: 0.875rem;
+    color: var(--color-text-primary);
+}
+
+.positions {
+    display: flex;
+    gap: var(--space-2);
+    margin: var(--space-2) 0;
+    flex-wrap: wrap;
+}
+
+.position {
+    font-size: 0.75rem;
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-bg-elevated);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-muted);
+}
+
+.resolution {
+    font-size: 0.8125rem;
+    color: var(--color-cyan);
+    margin-top: var(--space-2);
+}
+
+@media (max-width: 768px) {
+    .reviews-grid {
+        grid-template-columns: 1fr;
+    }
+}
