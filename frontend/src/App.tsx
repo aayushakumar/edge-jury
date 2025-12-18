@@ -5,6 +5,7 @@ import { CouncilPanel } from './components/Council/CouncilPanel';
 import { VerificationPanel } from './components/Verification/VerificationPanel';
 import { SettingsModal, CouncilSettings } from './components/Settings/SettingsModal';
 import { HistorySidebar } from './components/History/HistorySidebar';
+import { HomePage } from './components/HomePage/HomePage';
 import { useCouncilChat } from './hooks/useCouncilChat';
 import './styles/app.css';
 
@@ -16,6 +17,7 @@ const DEFAULT_SETTINGS: CouncilSettings = {
 };
 
 function App() {
+    const [currentView, setCurrentView] = useState<'home' | 'chat'>('home');
     const [activeTab, setActiveTab] = useState<'council' | 'verification'>('council');
     const [showSettings, setShowSettings] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
@@ -34,24 +36,39 @@ function App() {
         clearConversation,
     } = useCouncilChat(councilSettings);
 
-    const handleNavClick = useCallback((view: 'chat' | 'history' | 'settings') => {
+    const handleNavClick = useCallback((view: 'chat' | 'history' | 'settings' | 'home') => {
         if (view === 'history') {
             setShowHistory(true);
         } else if (view === 'settings') {
             setShowSettings(true);
+        } else if (view === 'home') {
+            setCurrentView('home');
+        } else if (view === 'chat') {
+            setCurrentView('chat');
         }
-        // 'chat' is the default view, no modal needed
     }, []);
 
     const handleNewConversation = useCallback(() => {
         clearConversation();
         setShowHistory(false);
+        setCurrentView('chat');
     }, [clearConversation]);
 
     const handleSelectConversation = useCallback((id: string) => {
         loadConversation(id);
+        setCurrentView('chat');
     }, [loadConversation]);
 
+    const handleStartChat = useCallback(() => {
+        setCurrentView('chat');
+    }, []);
+
+    // Show homepage
+    if (currentView === 'home') {
+        return <HomePage onStartChat={handleStartChat} />;
+    }
+
+    // Show chat interface
     return (
         <div className="app">
             <Header onNavClick={handleNavClick} />
@@ -125,4 +142,3 @@ function App() {
 }
 
 export default App;
-

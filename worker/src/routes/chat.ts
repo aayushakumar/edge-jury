@@ -69,19 +69,31 @@ chatRouter.post('/', async (c) => {
         anonymize_reviews: settings?.anonymize_reviews ?? true,
     };
 
+    // Extract user identity from Cloudflare Access headers
+    // Falls back to 'anonymous' if not using Cloudflare Access
+    const userId = c.req.header('CF-Access-Authenticated-User-Email') || 'anonymous';
+
     // Create or get conversation with proper error handling
     let convId = conversation_id;
     let conversationHistory: Message[] = [];
 
     try {
         if (!convId) {
-            // New conversation
+            // New conversation - associate with user
             convId = generateId();
             await env.DB.prepare(
-                'INSERT INTO conversations (id, title) VALUES (?, ?)'
-            ).bind(convId, message.substring(0, 50) + (message.length > 50 ? '...' : '')).run();
+                'INSERT INTO conversations (id, user_id, title) VALUES (?, ?, ?)'
+            ).bind(convId, userId, message.substring(0, 50) + (message.length > 50 ? '...' : '')).run();
         } else {
-            // Existing conversation - fetch history for context
+            // Existing conversation - verify ownership and fetch history for context
+            const convCheck = await env.DB.prepare(
+                'SELECT user_id FROM conversations WHERE id = ?'
+            ).bind(convId).first<{ user_id: string }>();
+
+            if (convCheck && convCheck.user_id !== userId && convCheck.user_id !== 'anonymous') {
+                return c.json({ error: 'Conversation not found' }, 404);
+            }
+
             const historyResult = await env.DB.prepare(
                 `SELECT id, conversation_id, role, model_id, content, created_at 
                  FROM messages 

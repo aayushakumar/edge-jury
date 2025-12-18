@@ -4,6 +4,7 @@
 -- Conversations table
 CREATE TABLE IF NOT EXISTS conversations (
   id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL DEFAULT 'anonymous',  -- User email from Cloudflare Access
   title TEXT NOT NULL DEFAULT 'New Conversation',
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -76,6 +77,7 @@ CREATE TABLE IF NOT EXISTS evidence_cards (
 );
 
 -- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_conversations_user ON conversations(user_id);
 CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);
 CREATE INDEX IF NOT EXISTS idx_runs_conversation ON runs(conversation_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_run ON reviews(run_id);

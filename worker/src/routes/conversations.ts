@@ -4,37 +4,51 @@ import { generateId } from '../utils/id';
 
 export const conversationsRouter = new Hono<{ Bindings: Env }>();
 
-// GET /api/conversations - List all conversations
+// Helper to get user ID from Cloudflare Access headers
+const getUserId = (c: { req: { header: (name: string) => string | undefined } }) => {
+    return c.req.header('CF-Access-Authenticated-User-Email') || 'anonymous';
+};
+
+// GET /api/conversations - List user's conversations only
 conversationsRouter.get('/', async (c) => {
+    const userId = getUserId(c);
+
     const result = await c.env.DB.prepare(
-        'SELECT * FROM conversations ORDER BY updated_at DESC LIMIT 50'
-    ).all<Conversation>();
+        'SELECT * FROM conversations WHERE user_id = ? ORDER BY updated_at DESC LIMIT 50'
+    ).bind(userId).all<Conversation>();
 
     return c.json({ conversations: result.results });
 });
 
-// POST /api/conversations - Create new conversation
+// POST /api/conversations - Create new conversation for user
 conversationsRouter.post('/', async (c) => {
+    const userId = getUserId(c);
     const body = await c.req.json<{ title?: string }>();
     const id = generateId();
     const title = body.title || 'New Conversation';
 
     await c.env.DB.prepare(
-        'INSERT INTO conversations (id, title) VALUES (?, ?)'
-    ).bind(id, title).run();
+        'INSERT INTO conversations (id, user_id, title) VALUES (?, ?, ?)'
+    ).bind(id, userId, title).run();
 
     return c.json({ id, title }, 201);
 });
 
-// GET /api/conversations/:id - Get conversation with messages
+// GET /api/conversations/:id - Get conversation with messages (verify ownership)
 conversationsRouter.get('/:id', async (c) => {
+    const userId = getUserId(c);
     const id = c.req.param('id');
 
     const conversation = await c.env.DB.prepare(
         'SELECT * FROM conversations WHERE id = ?'
-    ).bind(id).first<Conversation>();
+    ).bind(id).first<Conversation & { user_id: string }>();
 
     if (!conversation) {
+        return c.json({ error: 'Conversation not found' }, 404);
+    }
+
+    // Verify ownership (allow anonymous for backwards compatibility)
+    if (conversation.user_id !== userId && conversation.user_id !== 'anonymous') {
         return c.json({ error: 'Conversation not found' }, 404);
     }
 
@@ -48,9 +62,23 @@ conversationsRouter.get('/:id', async (c) => {
     });
 });
 
-// DELETE /api/conversations/:id - Delete conversation
+// DELETE /api/conversations/:id - Delete conversation (verify ownership)
 conversationsRouter.delete('/:id', async (c) => {
+    const userId = getUserId(c);
     const id = c.req.param('id');
+
+    // Verify ownership before delete
+    const conversation = await c.env.DB.prepare(
+        'SELECT user_id FROM conversations WHERE id = ?'
+    ).bind(id).first<{ user_id: string }>();
+
+    if (!conversation) {
+        return c.json({ error: 'Conversation not found' }, 404);
+    }
+
+    if (conversation.user_id !== userId && conversation.user_id !== 'anonymous') {
+        return c.json({ error: 'Conversation not found' }, 404);
+    }
 
     await c.env.DB.prepare(
         'DELETE FROM conversations WHERE id = ?'
@@ -58,3 +86,4 @@ conversationsRouter.delete('/:id', async (c) => {
 
     return c.json({ success: true });
 });
+
