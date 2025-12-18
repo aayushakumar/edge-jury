@@ -11,7 +11,7 @@ database_id = "df90eab6-53ab-4991-b38d-1372cf7817c9"
 # KV Namespace binding
 [[kv_namespaces]]
 binding = "KV"
-id = "local"  # Will be updated after `wrangler kv:namespace create`
+id = "bc73dbcca17e4568a43b536a62b4ec38"
 
 # Workers AI binding
 [ai]

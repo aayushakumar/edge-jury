@@ -71,8 +71,11 @@ export function useCouncilChat(settings: CouncilSettings) {
         setStage4Result(null);
         setIsLoading(true);
 
+        // Use environment variable for API URL (production) or relative path (dev)
+        const apiBase = import.meta.env.VITE_API_URL || '';
+
         try {
-            const response = await fetch('/api/chat', {
+            const response = await fetch(`${apiBase}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
