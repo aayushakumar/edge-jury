@@ -217,23 +217,72 @@ Get full run details (all stage results).
 
 ---
 
+## 🌍 Live Demo
+
+| Component | URL |
+|-----------|-----|
+| **Frontend** | https://e9cecaa7.edge-jury.pages.dev |
+| **API** | https://edge-jury-worker.aayushakumars.workers.dev |
+
+---
+
 ## 🚢 Deployment
 
-### Deploy Worker
+### Prerequisites
+
+1. **Login to Cloudflare:**
+   ```bash
+   npx wrangler login
+   ```
+
+2. **Create D1 Database:**
+   ```bash
+   npx wrangler d1 create edge-jury-db
+   ```
+   Copy the `database_id` from output to `worker/wrangler.toml`.
+
+3. **Create KV Namespace:**
+   ```bash
+   cd worker
+   npx wrangler kv namespace create KV
+   ```
+   Copy the `id` from output to `worker/wrangler.toml`.
+
+4. **Initialize Production Database:**
+   ```bash
+   cd worker
+   npx wrangler d1 execute edge-jury-db --remote --file=../schema/d1.sql
+   ```
+
+### Deploy Worker (API)
 
 ```bash
 cd worker
 npm run deploy
 ```
 
+Your worker will be available at: `https://<worker-name>.<account>.workers.dev`
+
 ### Deploy Frontend (Cloudflare Pages)
 
-```bash
-cd frontend
-npm run build
+1. **Build the frontend:**
+   ```bash
+   cd frontend
+   npm run build
+   ```
 
-# Then connect to Cloudflare Pages via GitHub
-# Or use: npx wrangler pages deploy dist
+2. **Deploy to Pages:**
+   ```bash
+   npx wrangler pages deploy dist --project-name=edge-jury
+   ```
+
+   Your frontend will be available at: `https://<hash>.edge-jury.pages.dev`
+
+### Environment Variables
+
+Create `frontend/.env.production` with your worker URL:
+```
+VITE_API_URL=https://your-worker.workers.dev
 ```
 
 ---
