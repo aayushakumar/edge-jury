@@ -16,6 +16,9 @@ interface HistorySidebarProps {
     onNewConversation: () => void;
 }
 
+// API base URL from environment variable
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 export function HistorySidebar({
     isOpen,
     onClose,
@@ -37,7 +40,7 @@ export function HistorySidebar({
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch('/api/conversations');
+            const response = await fetch(`${API_BASE}/api/conversations`);
             if (!response.ok) throw new Error('Failed to load conversations');
             const data = await response.json();
             setConversations(data.conversations || []);
@@ -53,7 +56,7 @@ export function HistorySidebar({
         if (!confirm('Delete this conversation?')) return;
 
         try {
-            await fetch(`/api/conversations/${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE}/api/conversations/${id}`, { method: 'DELETE' });
             setConversations((prev) => prev.filter((c) => c.id !== id));
         } catch (err) {
             console.error('Delete failed:', err);

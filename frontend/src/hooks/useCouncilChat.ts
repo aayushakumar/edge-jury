@@ -180,8 +180,9 @@ export function useCouncilChat(settings: CouncilSettings) {
 
     const loadConversation = useCallback(async (conversationId: string) => {
         setIsLoading(true);
+        const apiBase = import.meta.env.VITE_API_URL || '';
         try {
-            const response = await fetch(`/api/conversations/${conversationId}`);
+            const response = await fetch(`${apiBase}/api/conversations/${conversationId}`);
             if (!response.ok) throw new Error('Failed to load conversation');
             const data = await response.json();
 
