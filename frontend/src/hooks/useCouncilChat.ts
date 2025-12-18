@@ -46,7 +46,7 @@ interface CouncilSettings {
     anonymize_reviews: boolean;
 }
 
-export function useCouncilChat(settings: CouncilSettings) {
+export function useCouncilChat(settings: CouncilSettings, authToken: string | null = null) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [currentRun, setCurrentRun] = useState<Run | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -78,9 +78,14 @@ export function useCouncilChat(settings: CouncilSettings) {
         const apiBase = import.meta.env.VITE_API_URL || '';
 
         try {
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (authToken) {
+                headers['Authorization'] = `Bearer ${authToken}`;
+            }
+
             const response = await fetch(`${apiBase}/api/chat`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({
                     message: content,
                     conversation_id: currentRun?.conversation_id,

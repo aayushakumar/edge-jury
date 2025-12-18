@@ -4,6 +4,7 @@ import { Env } from './types';
 import { chatRouter } from './routes/chat';
 import { conversationsRouter } from './routes/conversations';
 import { runsRouter } from './routes/runs';
+import { authRouter } from './routes/auth';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -25,6 +26,7 @@ app.get('/', (c) => {
 });
 
 // API routes
+app.route('/api/auth', authRouter);
 app.route('/api/chat', chatRouter);
 app.route('/api/conversations', conversationsRouter);
 app.route('/api/runs', runsRouter);

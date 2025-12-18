@@ -1,10 +1,18 @@
 -- EdgeJury Database Schema
 -- Cloudflare D1 (SQLite)
 
+-- Users table (for authentication)
+CREATE TABLE IF NOT EXISTS users (
+  id TEXT PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- Conversations table
 CREATE TABLE IF NOT EXISTS conversations (
   id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL DEFAULT 'anonymous',  -- User email from Cloudflare Access
+  user_id TEXT NOT NULL DEFAULT 'anonymous',  -- User ID or 'anonymous' for trial
   title TEXT NOT NULL DEFAULT 'New Conversation',
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))

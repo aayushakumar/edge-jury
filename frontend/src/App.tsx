@@ -7,6 +7,7 @@ import { SettingsModal, CouncilSettings } from './components/Settings/SettingsMo
 import { HistorySidebar } from './components/History/HistorySidebar';
 import { HomePage } from './components/HomePage/HomePage';
 import { TrialLimitModal } from './components/Trial/TrialLimitModal';
+import { AuthModal } from './components/Auth/AuthModal';
 import { useCouncilChat } from './hooks/useCouncilChat';
 import './styles/app.css';
 
@@ -18,7 +19,12 @@ const DEFAULT_SETTINGS: CouncilSettings = {
 };
 
 const TRIAL_LIMIT = 3;
-const TRIAL_STORAGE_KEY = 'edgejury_trial_chats';
+const TRIAL_STORAGE_KEY = 'edgejury_trial';
+
+interface TrialData {
+    date: string;
+    count: number;
+}
 
 function App() {
     const [currentView, setCurrentView] = useState<'home' | 'chat'>('home');
@@ -26,14 +32,41 @@ function App() {
     const [showSettings, setShowSettings] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
     const [showTrialModal, setShowTrialModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
     const [trialChatsUsed, setTrialChatsUsed] = useState(0);
     const [councilSettings, setCouncilSettings] = useState<CouncilSettings>(DEFAULT_SETTINGS);
+    const [authToken, setAuthToken] = useState<string | null>(null);
+    const [user, setUser] = useState<{ id: string; email: string } | null>(null);
 
-    // Load trial count from localStorage on mount
+    // Check if user is authenticated
+    const isAuthenticated = !!authToken && !!user;
+
+    // Load auth and trial state on mount
     useEffect(() => {
-        const stored = localStorage.getItem(TRIAL_STORAGE_KEY);
-        if (stored) {
-            setTrialChatsUsed(parseInt(stored, 10) || 0);
+        // Check for existing auth
+        const token = localStorage.getItem('edgejury_token');
+        const storedUser = localStorage.getItem('edgejury_user');
+        if (token && storedUser) {
+            setAuthToken(token);
+            setUser(JSON.parse(storedUser));
+        }
+
+        // Load trial data with daily reset
+        const today = new Date().toISOString().split('T')[0];
+        const storedTrial = localStorage.getItem(TRIAL_STORAGE_KEY);
+        if (storedTrial) {
+            try {
+                const trialData: TrialData = JSON.parse(storedTrial);
+                if (trialData.date === today) {
+                    setTrialChatsUsed(trialData.count);
+                } else {
+                    // New day, reset trial
+                    localStorage.setItem(TRIAL_STORAGE_KEY, JSON.stringify({ date: today, count: 0 }));
+                    setTrialChatsUsed(0);
+                }
+            } catch {
+                setTrialChatsUsed(0);
+            }
         }
     }, []);
 
@@ -48,10 +81,16 @@ function App() {
         stage4Result,
         loadConversation,
         clearConversation,
-    } = useCouncilChat(councilSettings);
+    } = useCouncilChat(councilSettings, authToken);
 
-    // Wrap sendMessage to track trial usage
+    // Wrap sendMessage to track trial usage (only for non-authenticated users)
     const sendMessage = useCallback((content: string) => {
+        if (isAuthenticated) {
+            // Authenticated users have unlimited chats
+            originalSendMessage(content, false);
+            return;
+        }
+
         // Check if trial limit reached
         if (trialChatsUsed >= TRIAL_LIMIT) {
             setShowTrialModal(true);
@@ -59,9 +98,10 @@ function App() {
         }
 
         // Increment trial counter
+        const today = new Date().toISOString().split('T')[0];
         const newCount = trialChatsUsed + 1;
         setTrialChatsUsed(newCount);
-        localStorage.setItem(TRIAL_STORAGE_KEY, newCount.toString());
+        localStorage.setItem(TRIAL_STORAGE_KEY, JSON.stringify({ date: today, count: newCount }));
 
         // Send the message (with isTrialMode=true to skip DB persistence)
         originalSendMessage(content, true);
@@ -70,7 +110,7 @@ function App() {
         if (newCount >= TRIAL_LIMIT) {
             setTimeout(() => setShowTrialModal(true), 500);
         }
-    }, [trialChatsUsed, originalSendMessage]);
+    }, [isAuthenticated, trialChatsUsed, originalSendMessage]);
 
     const handleNavClick = useCallback((view: 'chat' | 'history' | 'settings' | 'home') => {
         if (view === 'history') {
@@ -99,6 +139,27 @@ function App() {
         setCurrentView('chat');
     }, []);
 
+    const handleSignInClick = useCallback(() => {
+        setShowAuthModal(true);
+    }, []);
+
+    const handleAuthSuccess = useCallback((token: string, userData: { id: string; email: string }) => {
+        setAuthToken(token);
+        setUser(userData);
+        setShowAuthModal(false);
+        // Clear trial data on successful auth
+        localStorage.removeItem(TRIAL_STORAGE_KEY);
+        setTrialChatsUsed(0);
+    }, []);
+
+    const handleLogout = useCallback(() => {
+        localStorage.removeItem('edgejury_token');
+        localStorage.removeItem('edgejury_user');
+        setAuthToken(null);
+        setUser(null);
+        clearConversation();
+    }, [clearConversation]);
+
     // Show homepage
     if (currentView === 'home') {
         return <HomePage onStartChat={handleStartChat} />;
@@ -107,7 +168,13 @@ function App() {
     // Show chat interface
     return (
         <div className="app">
-            <Header onNavClick={handleNavClick} isTrialMode={trialChatsUsed < TRIAL_LIMIT} />
+            <Header
+                onNavClick={handleNavClick}
+                isTrialMode={!isAuthenticated}
+                onSignInClick={handleSignInClick}
+                user={user}
+                onLogout={handleLogout}
+            />
 
             <main className="main-content">
                 <div className="content-grid">
@@ -180,6 +247,13 @@ function App() {
                 onClose={() => setShowTrialModal(false)}
                 chatsUsed={trialChatsUsed}
                 maxChats={TRIAL_LIMIT}
+            />
+
+            {/* Auth Modal */}
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                onAuthSuccess={handleAuthSuccess}
             />
         </div>
     );

@@ -3,9 +3,12 @@ import './Header.css';
 interface HeaderProps {
     onNavClick: (view: 'chat' | 'history' | 'settings' | 'home') => void;
     isTrialMode?: boolean;
+    onSignInClick?: () => void;
+    user?: { id: string; email: string } | null;
+    onLogout?: () => void;
 }
 
-export function Header({ onNavClick, isTrialMode = true }: HeaderProps) {
+export function Header({ onNavClick, isTrialMode = true, onSignInClick, user, onLogout }: HeaderProps) {
     return (
         <header className="header glass">
             <div className="header-content">
@@ -26,16 +29,15 @@ export function Header({ onNavClick, isTrialMode = true }: HeaderProps) {
 
                 <div className="header-right">
                     {isTrialMode ? (
-                        <button className="btn btn-primary btn-sm" onClick={() => window.location.reload()}>
+                        <button className="btn btn-primary btn-sm" onClick={onSignInClick}>
                             Sign In
                         </button>
                     ) : (
-                        <div className="budget-meter">
-                            <span className="budget-label">Neurons</span>
-                            <div className="budget-bar">
-                                <div className="budget-fill" style={{ width: '15%' }}></div>
-                            </div>
-                            <span className="budget-value">1,500 / 10,000</span>
+                        <div className="user-menu">
+                            <span className="user-email">{user?.email}</span>
+                            <button className="btn btn-secondary btn-sm" onClick={onLogout}>
+                                Logout
+                            </button>
                         </div>
                     )}
                 </div>

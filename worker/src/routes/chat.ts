@@ -69,9 +69,23 @@ chatRouter.post('/', async (c) => {
         anonymize_reviews: settings?.anonymize_reviews ?? true,
     };
 
-    // Extract user identity from Cloudflare Access headers
-    // Falls back to 'anonymous' if not using Cloudflare Access
-    const userId = c.req.header('CF-Access-Authenticated-User-Email') || 'anonymous';
+    // Extract user identity from auth token or default to 'anonymous'
+    let userId = 'anonymous';
+    const authHeader = c.req.header('Authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+            const token = authHeader.substring(7);
+            const parts = token.split('.');
+            if (parts.length === 2) {
+                const payload = JSON.parse(atob(parts[1]));
+                if (payload.exp > Date.now() && payload.sub) {
+                    userId = payload.sub;
+                }
+            }
+        } catch {
+            // Invalid token, stay anonymous
+        }
+    }
 
     // Create or get conversation with proper error handling
     let convId = conversation_id;

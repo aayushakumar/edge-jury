@@ -4,9 +4,24 @@ import { generateId } from '../utils/id';
 
 export const conversationsRouter = new Hono<{ Bindings: Env }>();
 
-// Helper to get user ID from Cloudflare Access headers
+// Helper to get user ID from auth token
 const getUserId = (c: { req: { header: (name: string) => string | undefined } }) => {
-    return c.req.header('CF-Access-Authenticated-User-Email') || 'anonymous';
+    const authHeader = c.req.header('Authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+            const token = authHeader.substring(7);
+            const parts = token.split('.');
+            if (parts.length === 2) {
+                const payload = JSON.parse(atob(parts[1]));
+                if (payload.exp > Date.now() && payload.sub) {
+                    return payload.sub as string;
+                }
+            }
+        } catch {
+            // Invalid token
+        }
+    }
+    return 'anonymous';
 };
 
 // GET /api/conversations - List user's conversations only
