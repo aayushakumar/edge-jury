@@ -19,17 +19,17 @@ interface VerificationPanelProps {
 }
 
 const LABEL_CONFIG = {
-    verified: { icon: '✅', text: 'Verified', className: 'badge-verified' },
-    consistent: { icon: '✅', text: 'Consistent', className: 'badge-verified' },
-    uncertain: { icon: '⚠️', text: 'Uncertain', className: 'badge-uncertain' },
-    contradicted: { icon: '❌', text: 'Contradicted', className: 'badge-contradicted' },
+    verified: { icon: '+', text: 'Verified', className: 'badge-verified' },
+    consistent: { icon: '+', text: 'Consistent', className: 'badge-verified' },
+    uncertain: { icon: '?', text: 'Uncertain', className: 'badge-uncertain' },
+    contradicted: { icon: '×', text: 'Contradicted', className: 'badge-contradicted' },
 };
 
 export function VerificationPanel({ result, isLoading }: VerificationPanelProps) {
     if (!result && !isLoading) {
         return (
             <div className="verification-empty">
-                <div className="verification-empty-icon">✓</div>
+                <div className="verification-empty-icon">V</div>
                 <h3>No Verification Yet</h3>
                 <p>Claims from the chairman's answer will be verified here</p>
             </div>
@@ -56,7 +56,7 @@ export function VerificationPanel({ result, isLoading }: VerificationPanelProps)
     return (
         <div className="verification-panel">
             <div className="verification-header">
-                <h3>🔍 Verification Report</h3>
+                <h3>Verification Report</h3>
                 <span className={`mode-badge badge ${result.mode === 'evidence' ? 'badge-verified' : 'badge-model'}`}>
                     Mode: {result.mode === 'evidence' ? 'Evidence-Based' : 'Consistency Check'}
                 </span>
@@ -65,17 +65,17 @@ export function VerificationPanel({ result, isLoading }: VerificationPanelProps)
             {/* Stats Summary */}
             <div className="verification-stats">
                 <div className="stat stat-verified">
-                    <span className="stat-icon">✅</span>
+                    <span className="stat-icon">+</span>
                     <span className="stat-value">{stats.verified}</span>
                     <span className="stat-label">Verified</span>
                 </div>
                 <div className="stat stat-uncertain">
-                    <span className="stat-icon">⚠️</span>
+                    <span className="stat-icon">?</span>
                     <span className="stat-value">{stats.uncertain}</span>
                     <span className="stat-label">Uncertain</span>
                 </div>
                 <div className="stat stat-contradicted">
-                    <span className="stat-icon">❌</span>
+                    <span className="stat-icon">×</span>
                     <span className="stat-value">{stats.contradicted}</span>
                     <span className="stat-label">Contradicted</span>
                 </div>
