@@ -50,6 +50,7 @@ export function useCouncilChat(settings: CouncilSettings, authToken: string | nu
     const [messages, setMessages] = useState<Message[]>([]);
     const [currentRun, setCurrentRun] = useState<Run | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [currentStage, setCurrentStage] = useState<number>(0);
     const [stage1Results, setStage1Results] = useState<Stage1Result[] | null>(null);
     const [stage2Results, setStage2Results] = useState<Stage2Result[] | null>(null);
     const [stage3Result, setStage3Result] = useState<Stage3Result | null>(null);
@@ -138,14 +139,17 @@ export function useCouncilChat(settings: CouncilSettings, authToken: string | nu
                             // Handle different event types based on data structure
                             if (parsed.model_id && parsed.role && parsed.response) {
                                 // Stage 1 model result
+                                setCurrentStage(1);
                                 stage1Accumulator.push(parsed);
                                 setStage1Results([...stage1Accumulator]);
                             } else if (parsed.reviewer_model_id) {
                                 // Stage 2 review result
+                                setCurrentStage(2);
                                 stage2Accumulator.push(parsed);
                                 setStage2Results([...stage2Accumulator]);
                             } else if (parsed.final_answer) {
                                 // Stage 3 chairman result
+                                setCurrentStage(3);
                                 setStage3Result(parsed);
                                 // Add chairman message
                                 const chairmanMessage: Message = {
@@ -156,9 +160,11 @@ export function useCouncilChat(settings: CouncilSettings, authToken: string | nu
                                 setMessages(prev => [...prev, chairmanMessage]);
                             } else if (parsed.mode && parsed.claims) {
                                 // Stage 4 verification result
+                                setCurrentStage(4);
                                 setStage4Result(parsed);
                             } else if (parsed.run_id && parsed.conversation_id) {
                                 // Done event
+                                setCurrentStage(0);
                                 setCurrentRun({
                                     id: parsed.run_id,
                                     conversation_id: parsed.conversation_id,
@@ -219,6 +225,7 @@ export function useCouncilChat(settings: CouncilSettings, authToken: string | nu
     const clearConversation = useCallback(() => {
         setMessages([]);
         setCurrentRun(null);
+        setCurrentStage(0);
         setStage1Results(null);
         setStage2Results(null);
         setStage3Result(null);
@@ -229,6 +236,7 @@ export function useCouncilChat(settings: CouncilSettings, authToken: string | nu
         messages,
         currentRun,
         isLoading,
+        currentStage,
         sendMessage,
         stage1Results,
         stage2Results,
