@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { useToast } from '../Toast/Toast';
 import './ChatPanel.css';
 
 interface Message {
@@ -11,12 +13,22 @@ interface ChatPanelProps {
     messages: Message[];
     onSendMessage: (message: string) => void;
     isLoading: boolean;
+    currentStage?: number;
     chairmanAnswer?: string;
 }
 
-export function ChatPanel({ messages, onSendMessage, isLoading, chairmanAnswer }: ChatPanelProps) {
+const STAGE_LABELS: Record<number, string> = {
+    0: 'Starting...',
+    1: 'Stage 1/4: Gathering opinions',
+    2: 'Stage 2/4: Cross-reviewing',
+    3: 'Stage 3/4: Synthesizing answer',
+    4: 'Stage 4/4: Verifying claims',
+};
+
+export function ChatPanel({ messages, onSendMessage, isLoading, currentStage = 0, chairmanAnswer }: ChatPanelProps) {
     const [input, setInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const { showToast } = useToast();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,7 +49,7 @@ export function ChatPanel({ messages, onSendMessage, isLoading, chairmanAnswer }
     return (
         <div className="chat-panel glass-elevated">
             <div className="chat-header">
-                <h2>💬 Council Chat</h2>
+                <h2>Council Chat</h2>
                 <span className="chat-subtitle">Ask anything — the council will deliberate</span>
             </div>
 
@@ -64,29 +76,46 @@ export function ChatPanel({ messages, onSendMessage, isLoading, chairmanAnswer }
                 {messages.map((msg) => (
                     <div key={msg.id} className={`message ${msg.role}`}>
                         <div className="message-avatar">
-                            {msg.role === 'user' ? '👤' : '⚖️'}
+                            {msg.role === 'user' ? 'U' : 'C'}
                         </div>
                         <div className="message-content">
                             <div className="message-header">
                                 <span className="message-role">
                                     {msg.role === 'user' ? 'You' : 'Council Chairman'}
                                 </span>
+                                {msg.role === 'chairman' && (
+                                    <button
+                                        className="copy-btn"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(msg.content);
+                                            showToast('Copied to clipboard');
+                                        }}
+                                        title="Copy to clipboard"
+                                    >
+                                        Copy
+                                    </button>
+                                )}
                             </div>
-                            <div className="message-text">{msg.content}</div>
+                            <div className="message-text markdown-content">
+                                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                            </div>
                         </div>
                     </div>
                 ))}
 
                 {isLoading && (
                     <div className="message chairman loading">
-                        <div className="message-avatar">⚖️</div>
+                        <div className="message-avatar">C</div>
                         <div className="message-content">
                             <div className="message-header">
                                 <span className="message-role">Council Chairman</span>
-                                <span className="badge badge-model">Deliberating...</span>
                             </div>
-                            <div className="thinking-indicator">
-                                <span></span><span></span><span></span>
+                            <div className="progress-indicator">
+                                <div className="progress-stage">{STAGE_LABELS[currentStage]}</div>
+                                <div className="thinking-indicator">
+                                    <span></span><span></span><span></span>
+                                </div>
+                                <div className="progress-time">Usually takes 10-15 seconds</div>
                             </div>
                         </div>
                     </div>
@@ -98,16 +127,15 @@ export function ChatPanel({ messages, onSendMessage, isLoading, chairmanAnswer }
             <form className="chat-input-form" onSubmit={handleSubmit}>
                 <textarea
                     className="input chat-input"
-                    placeholder="Ask the council a question..."
+                    placeholder={isLoading ? "Type your next question..." : "Ask the council a question..."}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
+                        if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
                             e.preventDefault();
                             handleSubmit(e);
                         }
                     }}
-                    disabled={isLoading}
                     rows={1}
                 />
                 <button type="submit" className="btn btn-primary send-btn" disabled={isLoading || !input.trim()}>
