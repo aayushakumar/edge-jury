@@ -12,7 +12,7 @@
   --color-bg-secondary: #12121a;
   --color-bg-tertiary: #1a1a25;
   --color-bg-elevated: #222230;
-  
+
   /* Accent Colors */
   --color-cyan: #00f0ff;
   --color-cyan-dim: rgba(0, 240, 255, 0.15);
@@ -27,20 +27,20 @@
   --color-yellow-dim: rgba(245, 158, 11, 0.15);
   --color-red: #ef4444;
   --color-red-dim: rgba(239, 68, 68, 0.15);
-  
+
   /* Text Colors */
   --color-text-primary: #f0f0f5;
   --color-text-secondary: #9090a0;
   --color-text-muted: #606070;
-  
+
   /* Border Colors */
   --color-border: rgba(255, 255, 255, 0.08);
   --color-border-focus: var(--color-cyan);
-  
+
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  
+
   /* Spacing */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -51,26 +51,26 @@
   --space-8: 2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
-  
+
   /* Radii */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
-  
+
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --shadow-glow-cyan: 0 0 20px var(--color-cyan-glow);
   --shadow-glow-purple: 0 0 20px var(--color-purple-glow);
-  
+
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
   --transition-slow: 400ms ease;
-  
+
   /* Z-Index Scale */
   --z-base: 0;
   --z-dropdown: 100;
@@ -79,10 +79,90 @@
   --z-tooltip: 400;
 }
 
+/* Light Theme */
+[data-theme="light"] {
+  --color-bg-primary: #f8f9fc;
+  --color-bg-secondary: #ffffff;
+  --color-bg-tertiary: #f0f1f5;
+  --color-bg-elevated: #ffffff;
+
+  --color-cyan: #0891b2;
+  --color-cyan-dim: rgba(8, 145, 178, 0.1);
+  --color-cyan-glow: rgba(8, 145, 178, 0.2);
+  --color-purple: #7c3aed;
+  --color-purple-dim: rgba(124, 58, 237, 0.1);
+  --color-purple-glow: rgba(124, 58, 237, 0.2);
+
+  --color-green: #059669;
+  --color-green-dim: rgba(5, 150, 105, 0.1);
+  --color-yellow: #d97706;
+  --color-yellow-dim: rgba(217, 119, 6, 0.1);
+  --color-red: #dc2626;
+  --color-red-dim: rgba(220, 38, 38, 0.1);
+
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #9ca3af;
+
+  --color-border: rgba(0, 0, 0, 0.08);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-glow-cyan: 0 0 12px var(--color-cyan-glow);
+  --shadow-glow-purple: 0 0 12px var(--color-purple-glow);
+}
+
+/* Light theme component overrides */
+[data-theme="light"] .glass {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .glass-elevated {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="light"] body::before {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(124, 58, 237, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(8, 145, 178, 0.05) 0%, transparent 50%);
+}
+
+[data-theme="light"] .tabs {
+  background: var(--color-bg-tertiary);
+}
+
+[data-theme="light"] .tab.active {
+  color: #ffffff;
+}
+
+[data-theme="light"] .btn-primary {
+  color: #ffffff;
+}
+
+[data-theme="light"] .card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+}
+
+[data-theme="light"] .input {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+}
+
+[data-theme="light"] .message-avatar {
+  background: var(--color-bg-tertiary);
+}
+
 /* ============================================
    Reset & Base Styles
    ============================================ */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -107,7 +187,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: 
+  background:
     radial-gradient(ellipse at 20% 0%, var(--color-purple-dim) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 100%, var(--color-cyan-dim) 0%, transparent 50%);
   pointer-events: none;
@@ -127,18 +207,36 @@ a:hover {
 /* ============================================
    Typography
    ============================================ */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   line-height: 1.3;
   letter-spacing: -0.02em;
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 1.875rem; }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
+h1 {
+  font-size: 2.5rem;
+}
 
-code, pre, .mono {
+h2 {
+  font-size: 1.875rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+code,
+pre,
+.mono {
   font-family: var(--font-mono);
 }
 
@@ -347,27 +445,55 @@ textarea.input {
    Loading & Animation
    ============================================ */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 5px var(--color-cyan-glow); }
-  50% { box-shadow: 0 0 20px var(--color-cyan-glow); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px var(--color-cyan-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 20px var(--color-cyan-glow);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes typing {
-  from { width: 0; }
-  to { width: 100%; }
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
 }
 
 .loading {
@@ -417,9 +543,17 @@ textarea.input {
   justify-content: space-between;
 }
 
-.gap-2 { gap: var(--space-2); }
-.gap-4 { gap: var(--space-4); }
-.gap-6 { gap: var(--space-6); }
+.gap-2 {
+  gap: var(--space-2);
+}
+
+.gap-4 {
+  gap: var(--space-4);
+}
+
+.gap-6 {
+  gap: var(--space-6);
+}
 
 .grid {
   display: grid;
@@ -461,10 +595,15 @@ textarea.input {
   :root {
     --space-6: 1rem;
   }
-  
-  h1 { font-size: 1.75rem; }
-  h2 { font-size: 1.5rem; }
-  
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
   .grid-cols-2,
   .grid-cols-3 {
     grid-template-columns: 1fr;
