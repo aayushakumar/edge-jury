@@ -74,6 +74,7 @@ function App() {
         messages,
         currentRun,
         isLoading,
+        currentStage,
         sendMessage: originalSendMessage,
         stage1Results,
         stage2Results,
@@ -184,6 +185,7 @@ function App() {
                             messages={messages}
                             onSendMessage={sendMessage}
                             isLoading={isLoading}
+                            currentStage={currentStage}
                             chairmanAnswer={stage3Result?.final_answer}
                         />
                     </section>
@@ -195,13 +197,13 @@ function App() {
                                 className={`tab ${activeTab === 'council' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('council')}
                             >
-                                🧠 Council
+                                Council
                             </button>
                             <button
                                 className={`tab ${activeTab === 'verification' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('verification')}
                             >
-                                ✓ Verification
+                                Verification
                             </button>
                         </div>
 
