@@ -23,6 +23,17 @@ Then a **Chairman** synthesizes the best elements into a final answer, with a **
 
 ---
 
+
+## 🌍 Live Demo
+
+| Component | URL |
+|-----------|-----|
+| **API** | https://edge-jury-worker.aayushakumars.workers.dev |
+| **MVP** | https://edge-jury.pages.dev/ |
+
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -214,16 +225,6 @@ Get conversation with messages.
 ### `GET /api/runs/:id`
 
 Get full run details (all stage results).
-
----
-
-## 🌍 Live Demo
-
-| Component | URL |
-|-----------|-----|
-| **API** | https://edge-jury-worker.aayushakumars.workers.dev |
-| **MVP** | https://edge-jury.pages.dev/ |
-
 
 ---
 
